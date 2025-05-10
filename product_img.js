@@ -10,12 +10,17 @@
     'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe.css';
   document.head.appendChild(link);
 
-  /* 2. 再塞入 PhotoSwipe Lightbox 包裝 (JS)  */
-  var script = document.createElement('script');
-  script.src =
-    'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/umd/photoswipe-lightbox.umd.min.js';
-  script.onload = cb;                // 載完才執行你的程式
-  document.head.appendChild(script);
+  // ② PhotoSwipe 主程式
+  const ps = document.createElement('script');
+  ps.src = 'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/umd/photoswipe.umd.min.js';
+  head.appendChild(ps);
+
+  // ③ Lightbox 殼
+  const lb = document.createElement('script');
+  lb.src = 'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/umd/photoswipe-lightbox.umd.min.js';
+  lb.onload = cb;                     // 兩支 JS 都載好才會 callback
+  head.appendChild(lb);
+})(initProductLightbox);
 })(function () {
 /* ====== 以下才是真正 product_img.js 的主程式 ====== */
 
