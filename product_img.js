@@ -11,13 +11,13 @@
   // ② PhotoSwipe 主程式
   const ps = document.createElement('script');
   ps.src = 'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/umd/photoswipe.umd.min.js';
-  head.appendChild(ps);
+  document.head.appendChild(ps);
 
   // ③ Lightbox 殼
   const lb = document.createElement('script');
   lb.src = 'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/umd/photoswipe-lightbox.umd.min.js';
   lb.onload = cb;                     // 兩支 JS 都載好才會 callback
-  head.appendChild(lb);
+  document.head.appendChild(lb);
 })(initProductLightbox);
 
 /* ===== 以下才是產品頁主程式 ===== */
