@@ -13,7 +13,7 @@
   /* 2. 再塞入 PhotoSwipe Lightbox 包裝 (JS)  */
   var script = document.createElement('script');
   script.src =
-    'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe-lightbox.umd.min.js';
+    'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe-lightbox.umd.js';
   script.onload = cb;                // 載完才執行你的程式
   document.head.appendChild(script);
 })(function () {
@@ -61,7 +61,7 @@ $(function () {
     /* 告訴 Lightbox：核心檔(js) 從哪裡抓 */
     pswpModule: () =>
       import(
-        'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe.umd.min.js'
+        'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe-lightbox.umd.js'
       ),
     dataSource: bigImgs,
   });
