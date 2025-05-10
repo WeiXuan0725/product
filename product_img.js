@@ -21,7 +21,7 @@
   lb.onload = cb;                     // 兩支 JS 都載好才會 callback
   head.appendChild(lb);
 })(initProductLightbox);
-})(function () {
+(function () {
 /* ====== 以下才是真正 product_img.js 的主程式 ====== */
 
 $(function () {
