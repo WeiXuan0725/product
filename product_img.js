@@ -1,114 +1,95 @@
-/* ---------- 動態載入 PhotoSwipe (JS + CSS) ------------- */
-(function loadPhotoSwipe(cb){
-  // 已經載過就直接回呼
+/* ---------- 動態載入 PhotoSwipe (JS + CSS) ---------- */
+(function loadPhotoSwipe(cb) {
+  // 已經載過就直接 callback
   if (window.PhotoSwipeLightbox) return cb();
 
-  // 1. CSS
+  /* 1. 先塞入 CSS（有版面才不會跑掉） */
   var link = document.createElement('link');
   link.rel = 'stylesheet';
-  link.href = 'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe.css';
+  link.href =
+    'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe.css';
   document.head.appendChild(link);
 
-  // 2. JS
+  /* 2. 再塞入 PhotoSwipe Lightbox 包裝 (JS)  */
   var script = document.createElement('script');
-  script.src = 'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe-lightbox.umd.min.js';
-  script.onload = cb;                    // 載完才執行你的程式
+  script.src =
+    'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe-lightbox.umd.min.js';
+  script.onload = cb;                // 載完才執行你的程式
   document.head.appendChild(script);
-})(function(){
-  /* ====== 以下才是原本 product_img.js 的主程式 ====== */
+})(function () {
+/* ====== 以下才是真正 product_img.js 的主程式 ====== */
 
-  $(function(){
+$(function () {
+  /* === 這裡放之前的 initLightbox() 邏輯 === */
+  if (!location.href.includes('ProductDetail')) return;
 
-    /* === 這裡放之前寫的 initLightbox() 那些程式 === */
-    /* ……（不需要再等 0.5 秒的 waitPs 了）…… */
-
+  /* 1. 收集圖片 ------------------------------------------------ */
+  const bigImgs = [];
+  $('#projectCarousel .carousel-inner img').each(function () {
+    const src = this.src;
+    if (src && !bigImgs.find(i => i.src === src)) {
+      bigImgs.push({ src, w: 1200, h: 1200 }); // 不知道尺寸就給個大概值
+    }
   });
+  if (!bigImgs.length) return;
 
-});
-(function(){
-/*** 你可以調整這二個 CDN（要 https） **************************/
-const PS_CSS = 'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe.css';
-const PS_JS  = 'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe-lightbox.umd.min.js';
-
-/*** 小工具：動態載入 ************************************************/
-const H = document.head || document.getElementsByTagName('head')[0];
-function loadCSS(href){ return new Promise(ok=>{
-  if (document.querySelector(`link[href="${href}"]`)) return ok();
-  const link=document.createElement('link');link.rel='stylesheet';link.href=href;
-  link.onload=ok;H.appendChild(link);
-});}
-function loadJS(src){ return new Promise(ok=>{
-  if (document.querySelector(`script[src="${src}"]`)) return ok();
-  const s=document.createElement('script');s.src=src;s.onload=ok;H.appendChild(s);
-});}
-function waitJQ(cb,i=0){                    // 確保 jQuery 已載入
-  if (window.jQuery) return cb();
-  if (i>30) return;                         // 3 秒沒就放棄
-  setTimeout(()=>waitJQ(cb,i+1),100);
-}
-
-/*** 只在商品頁執行 **************************************************/
-if (location.href.indexOf('ProductDetail')===-1) return;
-
-Promise.all([loadCSS(PS_CSS),loadJS(PS_JS)]).then(()=>{
-  waitJQ(main);
-});
-
-function main(){
-  const $ = jQuery;                         // 站內本來就有 jQuery
-
-  /*** 1. 收集圖片 ***************************************************/
-  const pics=[];
-  $('#projectCarousel .carousel-inner img').each(function(){
-     const src=this.src;
-     if (src && pics.indexOf(src)===-1) pics.push(src);
-  });
-  if(!pics.length) return;
-
-  /*** 2. 產生 HTML **************************************************/
+  /* 2. 建立版面 ------------------------------------------------ */
   $('#projectCarousel').replaceWith(`
-      <div id="psWrap" style="text-align:center;position:relative;">
-         <button id="prev" class="psA">‹</button>
-         <img   id="big"  src="${pics[0]}" style="max-width:500px;border-radius:8px;cursor:zoom-in">
-         <button id="next" class="psA">›</button>
-         <div id="bar" style="display:flex;gap:10px;justify-content:center;margin-top:8px"></div>
-      </div>`);
+    <div id="psArea" style="position:relative;text-align:center;">
+      <button id="prev" class="pswp__button pswp__button--arrow">‹</button>
+      <img id="mainImg" src="${bigImgs[0].src}"
+           style="max-width:500px;border-radius:8px;cursor:zoom-in">
+      <button id="next" class="pswp__button pswp__button--arrow pswp__button--arrow--next">›</button>
+      <div id="thumbBar"
+           style="display:flex;gap:10px;justify-content:center;margin-top:8px"></div>
+    </div>`);
 
-  pics.forEach((s,i)=>$('#bar').append(
-    `<img class="tmb${!i?' on':''}" data-i="${i}"
-          src="${s}" style="width:70px;height:70px;object-fit:cover;border:2px solid transparent">`)
+  bigImgs.forEach((item, i) =>
+    $('#thumbBar').append(
+      `<img class="thumbItem${!i ? ' ps-active' : ''}"
+             src="${item.src}" data-idx="${i}"
+             style="width:70px;height:70px;object-fit:cover;border:2px solid ${
+               !i ? '#f60' : 'transparent'
+             }">`
+    )
   );
 
-  /*** 3. 裝 PhotoSwipe **********************************************/
-  const ps = new PhotoSwipeLightbox({
-        gallery:'#psWrap', children:'img',
-        dataSource: pics.map(s=>({src:s,w:1280,h:1280}))  // 先填 1280×1280，實際會自動再去抓
+  /* 3. PhotoSwipe Lightbox ------------------------------------ */
+  const lightbox = new PhotoSwipeLightbox({
+    gallery: '#psArea',
+    children: 'img',
+    /* 告訴 Lightbox：核心檔(js) 從哪裡抓 */
+    pswpModule: () =>
+      import(
+        'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe.umd.min.js'
+      ),
+    dataSource: bigImgs,
   });
-  ps.init();
+  lightbox.init();
 
-  /*** 4. 切換邏輯 ***************************************************/
-  let idx=0;
-  const go=i=>{
-     idx=i;
-     $('#big').attr('src',pics[i]);
-     $('.tmb').removeClass('on').eq(i).addClass('on');
+  /* 4. 主圖 / 縮圖 / 左右鍵 同步 ------------------------------- */
+  let idx = 0;
+  const switchTo = (i) => {
+    idx = i;
+    $('#mainImg').attr('src', bigImgs[i].src);
+    $('.thumbItem')
+      .removeClass('ps-active')
+      .css('border', '2px solid transparent')
+      .eq(i)
+      .addClass('ps-active')
+      .css('border', '2px solid #f60');
   };
-  $('#bar').on('click','.tmb',e=>go(+e.target.dataset.i));
-  $('#prev').on('click',()=>go((idx-1+pics.length)%pics.length));
-  $('#next').on('click',()=>go((idx+1)%pics.length));
-  $('#big').on('click',()=>ps.loadAndOpen(idx));
-  ps.on('change',e=>go(e.currIndex));
-}
 
-/*** 5. 造型（直接寫進 <head>） ************************************/
-const style=document.createElement('style');
-style.textContent=`
-  .tmb.on{border:2px solid #ff6600!important}
-  .tmb:hover{transform:scale(.92)}
-  .psA{position:absolute;top:50%;transform:translateY(-50%);
-       width:42px;height:42px;border:0;border-radius:50%;
-       background:#0006;color:#fff;font:26px/42px sans-serif;cursor:pointer;z-index:30}
-  #prev{left:10px}#next{right:10px}
-  .psA:hover{background:#000b}`;
-H.appendChild(style);
-})();
+  $('#thumbBar').on('click', '.thumbItem', function () {
+    switchTo(+$(this).data('idx'));
+  });
+  $('#prev').on('click', () =>
+    switchTo((idx - 1 + bigImgs.length) % bigImgs.length)
+  );
+  $('#next').on('click', () => switchTo((idx + 1) % bigImgs.length));
+  $('#mainImg').on('click', () => lightbox.loadAndOpen(idx));
+
+  lightbox.on('change', (e) => switchTo(e.currIndex));
+});
+/* ====== 以上主程式 ====== */
+});
