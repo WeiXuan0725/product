@@ -20,8 +20,10 @@
   lb.src = 'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/umd/photoswipe-lightbox.umd.min.js';
   lb.onload = cb;                     // 兩支 JS 都載好才會 callback
   head.appendChild(lb);
-})(initProductLightbox);
-(function () {
+})
+  
+  /* 真正產生燈箱的程式 ─ 做成全域函式方便外部先呼叫 */
+  window.initProductLightbox = (function () {
 /* ====== 以下才是真正 product_img.js 的主程式 ====== */
 
 $(function () {
