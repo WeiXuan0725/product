@@ -1,4 +1,31 @@
 <script>
+/* ---------- 動態載入 PhotoSwipe (JS + CSS) ------------- */
+(function loadPhotoSwipe(cb){
+  // 已經載過就直接回呼
+  if (window.PhotoSwipeLightbox) return cb();
+
+  // 1. CSS
+  var link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = 'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe.css';
+  document.head.appendChild(link);
+
+  // 2. JS
+  var script = document.createElement('script');
+  script.src = 'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe-lightbox.umd.min.js';
+  script.onload = cb;                    // 載完才執行你的程式
+  document.head.appendChild(script);
+})(function(){
+  /* ====== 以下才是原本 product_img.js 的主程式 ====== */
+
+  $(function(){
+
+    /* === 這裡放之前寫的 initLightbox() 那些程式 === */
+    /* ……（不需要再等 0.5 秒的 waitPs 了）…… */
+
+  });
+
+});
 (function(){
 /*** 你可以調整這二個 CDN（要 https） **************************/
 const PS_CSS = 'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe.css';
