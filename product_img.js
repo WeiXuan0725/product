@@ -1,4 +1,3 @@
-<script>
 /* ---------- 動態載入 PhotoSwipe (JS + CSS) ------------- */
 (function loadPhotoSwipe(cb){
   // 已經載過就直接回呼
@@ -113,4 +112,3 @@ style.textContent=`
   .psA:hover{background:#000b}`;
 H.appendChild(style);
 })();
-</script>
