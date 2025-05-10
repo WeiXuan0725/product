@@ -11,8 +11,8 @@
   }
 
   /* ① 先載 PhotoSwipe core，再載 lightbox ------------------------------------------------ */
-  loadJs('https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe.min.js', function () {
-    loadJs('https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe-lightbox.min.js', function () {
+  loadJs('https://cdn.jsdelivr.net/npm/photoswipe@5/dist/umd/photoswipe.min.js', function () {
+    loadJs('https://cdn.jsdelivr.net/npm/photoswipe@5/dist/umd/photoswipe-lightbox.min.js', function () {
       requestAnimationFrame(function () {
         if (window.PhotoSwipe && window.PhotoSwipeLightbox) {
           init();                       // ← 真正開始執行
