@@ -9,20 +9,6 @@
     s.onload = cb;
     document.head.appendChild(s);
   }
-
-  /* ① 先載 PhotoSwipe core，再載 lightbox ------------------------------------------------ */
-  loadJs('https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe.umd.min.js', function () {
-    loadJs('https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe-lightbox.umd.min.js', function () {
-      requestAnimationFrame(function () {
-        if (window.PhotoSwipe && window.PhotoSwipeLightbox) {
-          init();                       // ← 真正開始執行
-        } else {
-          console.warn('PhotoSwipe not ready - 檢查 CDN 是否 200');
-        }
-      });
-    });
-  });
-
 })(function () {
 
   /* 只在產品頁啟動 */
